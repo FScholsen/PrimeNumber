@@ -11,10 +11,10 @@ public class Consumer implements Runnable {
 		
 		try {
 			this.queue.get();
+			
 		} catch (QueueEmptyException e) {
-			e.getMessage();
+			System.out.println("Queue is empty");
 		}
-		
 	}
 	
 	@Override

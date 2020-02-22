@@ -12,7 +12,8 @@ public class Producer implements Runnable {
 		try {
 			this.queue.add(1);
 		} catch (QueueFullException e) {
-			e.getMessage();
+			//e.getMessage();
+			System.out.println("Queue is full");
 		}
 	}
 	

@@ -20,39 +20,46 @@ public class Queue {
 		}
 	}
 	
-	public List<Integer> add(Integer _number) throws QueueFullException {
-		if(this.queue.size() == SIZE) {
+	public void add(Integer _number) throws QueueFullException {
+		if(this.queue.size() >= SIZE) {
 			throw new QueueFullException();
 		}
+		/* section critique */
 		this.queue.add(_number + Queue.getLast());
 		
 		Queue.last++;
+		/* section critique */
 		
-		return this.queue;
 	}
 	
 	public Integer get() throws QueueEmptyException {
-		Integer currentCursor = null;
+		Integer current = null;
 		
 		try {
-			currentCursor = this.get(Queue.getCurrent());
+			current = this.get(Queue.getCurrent());
+			
+			/* section critique */
 			Queue.current++;
+			/* section critique */
+			
 		} catch (QueueEmptyException e) {
 			throw e;
 		}
 		
-		return currentCursor;
+		return current;
 	}
 	
 	private Integer get(Integer _number) throws QueueEmptyException {
-		if(this.queue.isEmpty()) {
+		if(Queue.getLast() <= Queue.getCurrent()) {
 			throw new QueueEmptyException();
 		}
 		return this.queue.get(_number);
 	}
 	
+	
 	/* GETTERS */
 	
+	/* For debugging purposes */
 	public List<Integer> getQueue() {
 		return this.queue;
 	}

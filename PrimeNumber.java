@@ -17,25 +17,14 @@ public class PrimeNumber {
 		Consumer consumer = new Consumer(queue);
 		
 		
-		try {
-			System.out.println(queue.get());
-		} catch (QueueEmptyException e1) {
-			//e1.getMessage();
-			System.out.println("File vide");
-		}
+		consumer.consume();
 		
 		int i = 0;
-		while(i < 10) {
+		while(i < 12) {
 
 			producer.produce();
-			
-			try {
-				System.out.println(queue.get());
-			} catch (QueueEmptyException e) {
-				//e.getMessage();
-				System.out.println("Case vide");
-			}
-			
+			//System.out.println(Queue.getCurrent());
+			//System.out.println(Queue.getLast());
 			i++;
 		}
 		
@@ -46,6 +35,16 @@ public class PrimeNumber {
 			System.out.println("File vide");
 		}
 		
+		
+		i = 0;
+		while(i < 15) {
+
+			consumer.consume();
+			//System.out.println(Queue.getCurrent());
+			//System.out.println(Queue.getLast());
+			i++;
+		}
+	
 		
 		
 	}
