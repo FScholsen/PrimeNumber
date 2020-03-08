@@ -3,15 +3,20 @@ import java.util.List;
 
 public class Queue {
 	
+	/* Not useful (performance killer) */
+	public static final int WAIT_TIME = 1000;
+	
 	private static final int SIZE = 10;
 	
-	private List<Integer> queue ;
+	private List<Integer> queue;
 	
 	private Object lock;
 	
 	/* TODO : there is no need to store those current and last as static members */
+	/* the index of the next element that the consumer will get */
 	private static Integer current = 0;
 	
+	/* the index of the next element that will be added to the queue by the producer */
 	private static Integer last = 0;
 	
 	public Queue() {
@@ -21,6 +26,7 @@ public class Queue {
 	}
 	
 	public void add(Integer _number) throws QueueFullException {
+		//System.out.println(this);
 		if(this.queue.size() >= SIZE) {
 			throw new QueueFullException();
 		}
@@ -33,12 +39,15 @@ public class Queue {
 	}
 	
 	public Integer get() throws QueueEmptyException {
+		//System.out.println(this);
+		
 		Integer current = null;
 		
 		try {
+			/* section critique */
 			current = this.get(Queue.getCurrent());
 			
-			/* section critique */
+			
 			Queue.current++;
 			/* section critique */
 			
