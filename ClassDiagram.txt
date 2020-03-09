@@ -1,0 +1,63 @@
+@startuml
+interface "Runnable" as Runnable
+interface "List" as List
+
+interface Runnable {
+	+run() : void
+}
+class Queue {
+	+ {static} int WAIT_TIME
+	- {static} int SIZE
+	-List<Integer> queue
+	-Integer current
+	-Integer last
+	-Object queueLock
+	-Object currentLock
+	-Object lastLock
+	-get(Integer) : Integer	
+	+add(Integer) : void
+	+get() : Integer 
+	+isReadable() : boolean
+	+isWritable() : boolean
+	+getQueue() : List<Integer>
+	+getCurrent() : Integer
+	+getLast() : Integer
+}
+
+class Worker {
+	#Queue queue
+	+getQueue() : Queue
+	+setQueue(Queue) : void
+	+ {static} isPrime(int) : boolean
+}
+
+class Consumer {
+	-String resultFileName
+	-Object fileLock
+	+consume() : void
+	+run() : void
+	+canConsume() : boolean
+	+finished() : boolean
+	+writeToFile(Integer) : boolean
+}
+
+class Producer {
+	-boolean finishedWork
+	-Integer maxRange
+	-Integer currentIndex
+	+produce() : void
+	+run() : void()
+	+canProduce() : boolean
+}
+
+
+
+Queue *-- "1" List
+Worker *-- "1" Queue
+Worker <|-- Consumer
+Worker <|-- Producer
+Runnable <|.. Consumer
+Runnable <|.. Producer
+
+
+@enduml
