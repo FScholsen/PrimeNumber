@@ -2,6 +2,7 @@
 public class Producer extends Worker implements Runnable {
 
 	private boolean finishedWork = false;
+	private boolean finishedSegment = false;
 
 	// private Integer minRange;
 	private Integer maxRange;
@@ -16,7 +17,7 @@ public class Producer extends Worker implements Runnable {
 	}
 
 	public void produce() {
-		if (currentIndex <= maxRange) {
+		if (!this.hasFinishedSegment()) {
 			if (isPrime(currentIndex)) {
 				try {
 					this.getQueue().add(currentIndex);
@@ -54,6 +55,14 @@ public class Producer extends Worker implements Runnable {
 
 	public boolean canProduce() {
 		return this.queue.isWritable();
+	}
+	
+	public boolean hasFinishedSegment() {
+		return this.currentIndex >= this.maxRange;
+	}
+	
+	public boolean hasFinishedWork() {
+		return this.hasFinishedWork() && this.queue.isWritable(); 
 	}
 
 }

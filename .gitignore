@@ -1,0 +1,9 @@
+/Consumer.class
+/PrimeNumber.class
+/Producer.class
+/Queue.class
+/QueueEmptyException.class
+/QueueFullException.class
+/Worker.class
+.classpath
+.project
