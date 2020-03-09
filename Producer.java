@@ -1,33 +1,54 @@
 
 public class Producer extends Worker implements Runnable {
-	
-	public Integer minRange;
-	public Integer maxRange;
-	
-	public Producer(Queue _queue) {
-		this.setQueue(_queue);
+
+	private boolean finishedWork = false;
+
+	private Integer minRange;
+	private Integer maxRange;
+
+	private Integer currentIndex;
+
+	public Producer(Queue _queue, Integer _minRange, Integer _maxRange) {
+		super(_queue);
+		this.minRange = _minRange;
+		this.maxRange = _maxRange;
+		this.currentIndex = _minRange;
 	}
-	
+
 	public void produce() {
-		try {
-			this.getQueue().add(0);
-		} catch (QueueFullException e) {
-			System.out.println("Queue is full");
+		if (currentIndex <= maxRange) {
+			if (isPrime(currentIndex)) {
+				try {
+					this.getQueue().add(currentIndex);
+				} catch (QueueFullException e) {
+					System.out.println("Queue is full");
+
+					Thread.yield();
+					try {
+						Thread.sleep(Queue.WAIT_TIME);
+					} catch (InterruptedException ie) {
+						ie.printStackTrace();
+					}
+				}
+			}
+			this.currentIndex++;
+		} else {
+			this.finishedWork = true;
 		}
 	}
-	
+
 	@Override
 	public void run() {
 		boolean canProduce = true;
-		while(canProduce) {
+		while (canProduce && !this.finishedWork) {
 			this.produce();
 			try {
-				this.idle();
 				Thread.sleep(Queue.WAIT_TIME);
 			} catch (InterruptedException e) {
 				canProduce = false;
 			}
 		}
+		//System.out.println(this + " : Finished => " + Thread.interrupted());
 	}
 
 }
