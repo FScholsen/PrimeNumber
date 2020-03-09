@@ -1,22 +1,25 @@
+import java.io.BufferedWriter;
+import java.io.FileWriter;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.TimeUnit;
 
 public class PrimeNumber {
 
+	/* constant The number of prime numbers to calculate */
 	public static final int PRIME_NUMBER_LIMIT = 1000;
 
-	public static final int NUM_PRODUCERS = 100;
+	/* constants for Producer & Consumer Threads */
+	public static final int NUM_PRODUCERS = 250;
+	public static final int NUM_CONSUMERS = 100;
 
-	public static final int NUM_CONSUMERS = 1;
+	public static final String RESULT_FILE_NAME = "result.txt";
 
 	public static void main(String[] args) {
 
 		long start = System.currentTimeMillis();
 
-		/* constants for Producer & Consumer Threads */
-
-		final int NUM_CONSUMERS = 1;
+		writeToFile("", false);
 
 		/* List of consumers and producers (global variables) */
 		List<Producer> producers = new ArrayList<Producer>(NUM_PRODUCERS);
@@ -54,10 +57,11 @@ public class PrimeNumber {
 			producers.add(producer);
 
 			producerThread = new Thread(producer);
-
-			System.out.println("[Producer #" + i + "] : " + segmentMinLimit + " - " + segmentMaxLimit + " in "
-					+ producerThread + " : " + producerThread.getState());
-
+			/*
+			 * System.out.println("[Producer #" + i + "] : " + segmentMinLimit + " - " +
+			 * segmentMaxLimit + " in " + producerThread + " : " +
+			 * producerThread.getState());
+			 */
 			producerThreads.add(producerThread);
 
 			segmentCounter += segmentSize;
@@ -67,7 +71,7 @@ public class PrimeNumber {
 		/* Consumer Threads initialization */
 		i = 0;
 		while (i < NUM_CONSUMERS) {
-			consumer = new Consumer(queue);
+			consumer = new Consumer(queue, RESULT_FILE_NAME);
 
 			consumers.add(consumer);
 
@@ -85,6 +89,13 @@ public class PrimeNumber {
 			i++;
 		}
 
+		/* Start all Consumer Threads */
+		i = 0;
+		while (i < NUM_CONSUMERS) {
+			consumerThreads.get(i).start();
+			i++;
+		}
+
 		/* Stop all Producer Threads */
 		i = 0;
 		while (i < NUM_PRODUCERS) {
@@ -95,38 +106,56 @@ public class PrimeNumber {
 			} catch (InterruptedException e) {
 				e.printStackTrace();
 			}
-			System.out.println(pt + " : " + pt.getState());
+			//System.out.println(pt + " : " + pt.getState());
 			i++;
 		}
 
-		/* Start all Consumer Threads */
-		/*
-		 * i = 0; while (i < NUM_CONSUMERS) { consumerThreads.get(i).start(); i++; }
-		 */
+		/* Stop all Consumer Threads */
+		i = 0;
+		while (i < NUM_CONSUMERS) {
+			Thread ct = consumerThreads.get(i);
 
-		/* Wait */
-		/*
-		 * try { TimeUnit.MILLISECONDS.sleep(2000); } catch (InterruptedException e) {
-		 * e.printStackTrace(); }
-		 */
-		printQueue(queue);
-		System.out.println(queue.getQueue().size());
-		printElapsedTime(start);
-	}
-
-	public static void printQueue(Queue queue) {
-		/* Display queue content for debug purposes */
-		try {
-			System.out.println(queue.getQueue());
-		} catch (Exception e) {
-			System.out.println("File vide");
+			try {
+				ct.join();
+			} catch (InterruptedException e) {
+				e.printStackTrace();
+			}
+			//System.out.println(ct + " : " + ct.getState());
+			i++;
 		}
+		
+		System.out.println(elapsedTime(start));
+		writeToFile(elapsedTime(start), true);
+
 	}
 
-	public static void printElapsedTime(long start) {
+	public static String elapsedTime(long start) {
 		long end = System.currentTimeMillis();
 		float timeElapsed = (end - start) / 1000f;
-		System.out.println("Execution time : " + timeElapsed + " seconds.");
+		return "Execution time : " + timeElapsed + " seconds.";
+	}
+
+	public static boolean writeToFile(String _text, boolean _append) {
+		BufferedWriter out = null;
+		boolean fileAppended = true;
+		try {
+			FileWriter fstream = new FileWriter(RESULT_FILE_NAME, _append); // true tells to append data.
+			out = new BufferedWriter(fstream);
+			out.write(_text);
+		} catch (IOException e) {
+			fileAppended = false;
+			System.err.println("Error: " + e.getMessage());
+		} finally {
+			if (out != null) {
+				try {
+					out.close();
+				} catch (IOException e) {
+					fileAppended = false;
+					e.printStackTrace();
+				}
+			}
+		}
+		return fileAppended;
 	}
 
 }

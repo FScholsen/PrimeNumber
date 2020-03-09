@@ -3,14 +3,14 @@ public class Producer extends Worker implements Runnable {
 
 	private boolean finishedWork = false;
 
-	private Integer minRange;
+	// private Integer minRange;
 	private Integer maxRange;
 
 	private Integer currentIndex;
 
 	public Producer(Queue _queue, Integer _minRange, Integer _maxRange) {
 		super(_queue);
-		this.minRange = _minRange;
+		// this.minRange = _minRange;
 		this.maxRange = _maxRange;
 		this.currentIndex = _minRange;
 	}
@@ -34,13 +34,14 @@ public class Producer extends Worker implements Runnable {
 			this.currentIndex++;
 		} else {
 			this.finishedWork = true;
+			// System.out.println(this + " stopped at " + this.currentIndex);
 		}
 	}
 
 	@Override
 	public void run() {
 		boolean canProduce = true;
-		while (canProduce && !this.finishedWork) {
+		while (canProduce && !this.finishedWork && this.canProduce()) {
 			this.produce();
 			try {
 				Thread.sleep(Queue.WAIT_TIME);
@@ -48,7 +49,11 @@ public class Producer extends Worker implements Runnable {
 				canProduce = false;
 			}
 		}
-		//System.out.println(this + " : Finished => " + Thread.interrupted());
+		//System.out.println(this + " stopped at " + this.currentIndex + ". can produce : " + this.canProduce());
+	}
+
+	public boolean canProduce() {
+		return this.queue.isWritable();
 	}
 
 }
