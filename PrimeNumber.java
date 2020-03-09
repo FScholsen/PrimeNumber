@@ -21,10 +21,7 @@ public class PrimeNumber {
 
 		writeToFile("", false);
 
-		/* List of consumers and producers (global variables) */
-		List<Producer> producers = new ArrayList<Producer>(NUM_PRODUCERS);
-		List<Consumer> consumers = new ArrayList<Consumer>(NUM_CONSUMERS);
-
+		/* List of Threads for consumers and producers (global variables) */
 		List<Thread> producerThreads = new ArrayList<Thread>(NUM_PRODUCERS);
 		List<Thread> consumerThreads = new ArrayList<Thread>(NUM_CONSUMERS);
 
@@ -47,23 +44,12 @@ public class PrimeNumber {
 		/* Producer Threads initialization */
 		i = 0;
 		int segmentSize = (PRIME_NUMBER_LIMIT / NUM_PRODUCERS), segmentCounter = 0;
-
 		while (i < NUM_PRODUCERS) {
 			int segmentMinLimit = segmentCounter + 1;
 			int segmentMaxLimit = segmentCounter + segmentSize;
-
 			producer = new Producer(queue, segmentMinLimit, segmentMaxLimit);
-
-			producers.add(producer);
-
 			producerThread = new Thread(producer);
-			/*
-			 * System.out.println("[Producer #" + i + "] : " + segmentMinLimit + " - " +
-			 * segmentMaxLimit + " in " + producerThread + " : " +
-			 * producerThread.getState());
-			 */
 			producerThreads.add(producerThread);
-
 			segmentCounter += segmentSize;
 			i++;
 		}
@@ -72,13 +58,8 @@ public class PrimeNumber {
 		i = 0;
 		while (i < NUM_CONSUMERS) {
 			consumer = new Consumer(queue, RESULT_FILE_NAME);
-
-			consumers.add(consumer);
-
 			consumerThread = new Thread(consumer);
-
 			consumerThreads.add(consumerThread);
-
 			i++;
 		}
 
@@ -106,6 +87,7 @@ public class PrimeNumber {
 			} catch (InterruptedException e) {
 				e.printStackTrace();
 			}
+			pt = null;
 			//System.out.println(pt + " : " + pt.getState());
 			i++;
 		}
@@ -120,6 +102,7 @@ public class PrimeNumber {
 			} catch (InterruptedException e) {
 				e.printStackTrace();
 			}
+			ct = null;
 			//System.out.println(ct + " : " + ct.getState());
 			i++;
 		}

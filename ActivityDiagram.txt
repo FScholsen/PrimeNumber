@@ -1,0 +1,13 @@
+@startuml
+(*) --> "Création des Threads Producers et initialization"
+--> "Création des Threads Consumers"
+--> ===B1===
+--> "Test des nombres premiers et\najout dans la file d'attente"
+--> ===B2===
+===B1=== --> "Lecture dans la file d'attente\net écriture dans le fichier résultat"
+--> ===B2===
+--> "Arret des Threads Producers et liberation de la mémoire"
+--> "Arret des Threads Consumers et libération de la mémoire"
+--> "Ecriture du temps d'execution du\nprogramme dans le fichier résultat"
+--> (*)
+@enduml
