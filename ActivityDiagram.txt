@@ -1,13 +1,62 @@
 @startuml
-(*) --> "Création des Threads Producers et initialization"
---> "Création des Threads Consumers"
---> ===B1===
---> "Test des nombres premiers et\najout dans la file d'attente"
---> ===B2===
-===B1=== --> "Lecture dans la file d'attente\net écriture dans le fichier résultat"
---> ===B2===
---> "Arret des Threads Producers et liberation de la mémoire"
---> "Arret des Threads Consumers et libération de la mémoire"
---> "Ecriture du temps d'execution du\nprogramme dans le fichier résultat"
---> (*)
+start
+:Éventuellement : Demande du nombre de nombre premiers à trouver;
+:Création de la structure de donnée qui contiendra les 1000 premiers nombres premiers \n // List<Number> Q = new ArrayList<Number>();
+fork
+	while (consumer do not invoke interrupt() ?) is (true)
+		:// initialisation des nombres de 0 à n\n// et flag isPrime à false\n\tproduce();
+	endwhile (false)
+fork again
+	while (!Q.PrimeNumbersComputeComplete()) is (true)
+		if (canRead()) then (true)
+			:consume();
+		else (false)
+			:yield();
+		endif
+	endwhile (false)
+	:Consumer invoke interrupt;
+end fork
+:Ecriture du contenu de la structure de donnée dans le fichier résultat;
+:Ecriture du temps d'execution du\nprogramme dans le fichier résultat;
+stop
 @enduml
+
+----
+Notes :
+Q.PrimeNumbersComputeComplete() return true if Q.primeNumbersFound (by the consumers) >= Q.PRIMES_TO_FOUND
+is reached when consumer (canRead() && !Q.isFull()) consume();
+
+/* Consumer Method */
+consume() {
+	number = q.get();
+	
+}
+
+/* Queue Method */
+get() {
+	/* section critique */
+	Number number = q.get(readCursor);
+	if(number.isPrime()) {
+		number.isFlaggedAsPrime = true;
+		Q.primeNumbersFound++;
+	}
+	readCursor++;
+	/* fin section critique */
+	return number;
+}
+
+/* Producer Method */
+produce() {
+	this.q.add();
+}
+
+/* Queue Method */
+add() {
+	/* section critique */
+	q.add(writeCursor);
+	writeCursor++;
+	/* fin section critique */
+}
+add(int _writeCursor) {
+	q.add(_writeCursor);
+}
