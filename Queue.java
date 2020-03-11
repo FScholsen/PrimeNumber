@@ -1,133 +1,180 @@
 import java.util.ArrayList;
-import java.util.List;
 
-public class Queue {
+public class Queue extends ArrayList<Number> {
+
+	private static final long serialVersionUID = 1L;
 
 	/* Not useful (performance killer) */
-	public static final int WAIT_TIME = 15;
+	public static final int WAIT_TIME = 1000;
 
-	private static final int SIZE = 1000;
-
-	/* ArrayList of Prime Numbers */
-	private List<Integer> queue;
+	/* the max allowed size of prime numbers to find */
+	private static final int MAX_SIZE = 10000;
 
 	/* the index of the next element that the consumer will get */
-	private Integer current = 0;
+	private int readCursor = 0;
 
 	/* the index of the next element that will be added to the queue by the producer */
-	private Integer last = 0;
+	private int writeCursor = 0;
+
+	/* the number of prime numbers to find */
+	private int numberOfPrimeNumbersWanted;
+
+	/* the count of numbers flagged as primes */
+	private int primeNumbersFound = 0;
 
 	/* queue lock to manage concurrent actions on queue */
 	private Object queueLock = new Object();
-	
-	private Object currentLock = new Object();
-	
-	private Object lastLock = new Object();
-	
-	public Queue() {
-		if (this.queue == null) {
-			this.queue = new ArrayList<Integer>(SIZE);
+
+	public Queue(int numberOfPrimeNumbersWanted) throws QueueSizeLimitException {
+		if (!this.isValidNumberOfPrimeNumbers(numberOfPrimeNumbersWanted)) {
+			throw new QueueSizeLimitException(
+					"The number of prime numbers to find is greater than or equals to " + Queue.MAX_SIZE);
 		}
+		this.numberOfPrimeNumbersWanted = numberOfPrimeNumbersWanted;
 	}
 
-	/**
-	 * Add a number into the queue
-	 * @param _number Integer to add to the queue
-	 * @throws QueueFullException
-	 */
-	synchronized public void add(Integer _number) throws QueueFullException {
-		// System.out.println(this);
-		if (!this.isWritable()) {
-			throw new QueueFullException();
-		}
+	/*** GETTERS AND SETTERS ***/
 
-		/* critical section */
+	synchronized private int getReadCursor() {
 		synchronized (this.queueLock) {
-
-			this.queue.add(_number);
-
-			this.last++;
+			return readCursor;
 		}
-		/* end critical section */
-
 	}
 
-	/**
-	 * Gives the number held at the current index in the queue
-	 * @return Integer the next item to read in the queue
-	 * @throws QueueEmptyException
-	 */
-	synchronized public Integer get() throws QueueEmptyException {
-		// System.out.println(this);
-
-		Integer current = null;
-
-		try {
-
-			/* critical section */
-			synchronized (this.queueLock) {
-
-				current = this.get(this.getCurrent());
-
-				this.current++;
-			}
-			/* end critical section */
-
-		} catch (QueueEmptyException e) {
-			throw e;
-		}
-
-		return current;
+	private void setReadCursor(int readCursor) {
+		this.readCursor = readCursor;
 	}
 
-	/**
-	 * Gives the number held at the _index in the queue
-	 * @param Integer index
-	 * @return Integer 
-	 * @throws QueueEmptyException
-	 */
-	private Integer get(Integer _index) throws QueueEmptyException {
-		if (!this.isReadable()) {
-			throw new QueueEmptyException();
+	private void incrementReadCursor() {
+		this.readCursor++;
+	}
+
+	synchronized protected int getWriteCursor() {
+		synchronized (this.queueLock) {
+			return writeCursor;
 		}
-		return this.queue.get(_index);
+	}
+
+	private void setWriteCursor(int writeCursor) {
+		this.writeCursor = writeCursor;
+	}
+
+	private void incrementWriteCursor() {
+		this.writeCursor++;
+	}
+
+	private int getNumberOfPrimeNumbersWanted() {
+		return numberOfPrimeNumbersWanted;
+	}
+
+	private void setNumberOfPrimeNumbersWanted(int numberOfPrimeNumbersWanted) {
+		this.numberOfPrimeNumbersWanted = numberOfPrimeNumbersWanted;
+	}
+
+	private int getPrimeNumbersFound() {
+		return primeNumbersFound;
+	}
+
+	private void setPrimeNumbersFound(int primeNumbersFound) {
+		this.primeNumbersFound = primeNumbersFound;
+	}
+
+	synchronized protected void incrementPrimeNumbersFound() {
+		synchronized (this.queueLock) {
+			this.primeNumbersFound++;
+		}
+	}
+
+	/*** END GETTERS AND SETTERS ***/
+
+	/*
+	 * Checks whether the number of prime numbers to find is not bigger than the
+	 * MAX_SIZE constant
+	 */
+	public boolean isValidNumberOfPrimeNumbers(int primeNumbersWanted) {
+		return primeNumbersWanted < MAX_SIZE;
 	}
 
 	/**
 	 * Checks whether the last item inserted has been read
-	 * @return boolean true if a new item has been inserted and has not been already read, false otherwise
+	 * 
+	 * @return boolean true if a new item has been inserted and has not been already
+	 *         read, false otherwise
 	 */
-	public boolean isReadable() {
-		return this.getLast() > this.getCurrent();
+	synchronized protected boolean isReadable() {
+		return this.getWriteCursor() > this.getReadCursor();
 	}
-	
+
 	/**
-	 * Checks whether a new item can be inserted into the Queue 
+	 * Checks whether a new item can be inserted into the Queue
+	 * 
 	 * @return boolean true if the Queue is not full, false otherwise
 	 */
-	public boolean isWritable() {
-		return this.queue.size() < Queue.SIZE;
+	synchronized protected boolean isWritable() {
+		return this.size() < MAX_SIZE;
 	}
 
-	/* GETTERS */
-
-	/* For debugging purposes */
-	public List<Integer> getQueue() {
-		return this.queue;
-	}
-
-	public Integer getCurrent() {
-		/* remove the lock here is something strange happens */
-		synchronized(this.currentLock) {
-			return this.current;
+	/**
+	 * @return boolean true if all the prime numbers to find have been found, false
+	 *         otherwise
+	 */
+	synchronized protected boolean primeNumbersComputeComplete() {
+		synchronized (this.queueLock) {
+			return this.getPrimeNumbersFound() >= this.getNumberOfPrimeNumbersWanted();
 		}
 	}
 
-	public Integer getLast() {
-		/* remove the lock here is something strange happens */
-		synchronized(this.lastLock) {
-			return this.last;
+	/**
+	 * Gives the number held at the _index in the queue
+	 * 
+	 * @param int _index
+	 * @return Number
+	 */
+	private Number read(int _index) throws QueueEmptyException {
+		if (!this.isReadable()) {
+			throw new QueueEmptyException("Queue is empty");
 		}
+		return super.get(_index);
+	}
+
+	/**
+	 * Returns the number held at the current index in the queue
+	 * 
+	 * @return Number the next item to read in the queue
+	 * @throws QueueEmptyException
+	 * @hint synchronization is the key
+	 */
+	synchronized protected Number read() throws QueueEmptyException {
+		Number number = null;
+		try {
+			/* critical section */
+			synchronized (this.queueLock) {
+				number = this.read(this.getReadCursor());
+				this.incrementReadCursor();
+			}
+			/* end critical section */
+		} catch (QueueEmptyException e) {
+			throw e;
+		}
+		return number;
+	}
+
+	/**
+	 * Add a number into the queue
+	 * 
+	 * @param _number Number to add to the queue
+	 * @throws QueueFullException
+	 */
+	synchronized protected void write(Number _number) throws QueueFullException {
+		if (!this.isWritable()) {
+			throw new QueueFullException("Queue is full");
+		}
+		/* critical section */
+		synchronized (this.queueLock) {
+			this.add(_number);
+			this.incrementWriteCursor();
+		}
+		/* end critical section */
 	}
 
 }

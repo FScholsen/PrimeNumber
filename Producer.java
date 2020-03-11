@@ -1,68 +1,31 @@
 
-public class Producer extends Worker implements Runnable {
+public class Producer extends Worker {
 
-	private boolean finishedWork = false;
-	private boolean finishedSegment = false;
-
-	// private Integer minRange;
-	private Integer maxRange;
-
-	private Integer currentIndex;
-
-	public Producer(Queue _queue, Integer _minRange, Integer _maxRange) {
+	public Producer(Queue _queue) {
 		super(_queue);
-		// this.minRange = _minRange;
-		this.maxRange = _maxRange;
-		this.currentIndex = _minRange;
 	}
 
-	public void produce() {
-		if (!this.hasFinishedSegment()) {
-			if (isPrime(currentIndex)) {
-				try {
-					this.getQueue().add(currentIndex);
-				} catch (QueueFullException e) {
-					System.out.println("Queue is full");
-
-					Thread.yield();
-					try {
-						Thread.sleep(Queue.WAIT_TIME);
-					} catch (InterruptedException ie) {
-						ie.printStackTrace();
-					}
-				}
-			}
-			this.currentIndex++;
-		} else {
-			this.finishedWork = true;
-			// System.out.println(this + " stopped at " + this.currentIndex);
-		}
+	public void work() {
+		//System.out.println("Producer working");
+		this.produce();
 	}
+	
+	private void produce() {
+		
+		Number number = new Number(this.queue().getWriteCursor());
+		
+		try {
+			this.queue().write(number);
+		} catch (QueueFullException e) {
+			System.out.println(e.getMessage());
 
-	@Override
-	public void run() {
-		boolean canProduce = true;
-		while (canProduce && !this.finishedWork && this.canProduce()) {
-			this.produce();
+			Thread.yield();
 			try {
 				Thread.sleep(Queue.WAIT_TIME);
-			} catch (InterruptedException e) {
-				canProduce = false;
+			} catch (InterruptedException ie) {
+				ie.printStackTrace();
 			}
 		}
-		//System.out.println(this + " stopped at " + this.currentIndex + ". can produce : " + this.canProduce());
-	}
-
-	public boolean canProduce() {
-		return this.queue.isWritable();
 	}
 	
-	public boolean hasFinishedSegment() {
-		return this.currentIndex >= this.maxRange;
-	}
-	
-	public boolean hasFinishedWork() {
-		return this.hasFinishedWork() && this.queue.isWritable(); 
-	}
-
 }
