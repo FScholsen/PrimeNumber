@@ -18,7 +18,8 @@ public class Queue extends ArrayList<Number> {
 	private int readCursor = 0;
 
 	/*
-	 * the index of the next element that will be written into the queue by the producer
+	 * the index of the next element that will be written into the queue by the
+	 * producer
 	 */
 	private int writeCursor = 0;
 
@@ -31,17 +32,31 @@ public class Queue extends ArrayList<Number> {
 	/* queue lock to manage concurrent actions on queue */
 	private Object queueLock = new Object();
 
+	private static Queue queue = null;
+
 	/**
-	 * 
 	 * @param numberOfPrimeNumbersWanted
 	 * @throws QueueSizeLimitException
 	 */
-	public Queue(int numberOfPrimeNumbersWanted) throws QueueSizeLimitException {
+	private Queue(int numberOfPrimeNumbersWanted) throws QueueSizeLimitException {
 		if (!this.isValidNumberOfPrimeNumbers(numberOfPrimeNumbersWanted)) {
 			throw new QueueSizeLimitException(
 					"The number of prime numbers to find is greater than or equals to " + Queue.MAX_PRIME_NUMBER);
 		}
 		this.numberOfPrimeNumbersWanted = numberOfPrimeNumbersWanted;
+	}
+
+	/**
+	 * The static method for retrieving the instance of the Singleton Queue class
+	 * 
+	 * @param numberOfPrimeNumbersWanted the limit of prime numbers to find
+	 * @return The Queue instance
+	 * @throws QueueSizeLimitException
+	 */
+	public static Queue getQueue(int numberOfPrimeNumbersWanted) throws QueueSizeLimitException {
+		if (Queue.queue == null)
+			queue = new Queue(numberOfPrimeNumbersWanted);
+		return queue;
 	}
 
 	/*** GETTERS AND SETTERS ***/
@@ -54,7 +69,7 @@ public class Queue extends ArrayList<Number> {
 		this.readCursor++;
 	}
 
-	protected int getWriteCursor() {
+	private int getWriteCursor() {
 		return writeCursor;
 	}
 
@@ -70,7 +85,7 @@ public class Queue extends ArrayList<Number> {
 		return primeNumbersFound;
 	}
 
-	protected void incrementPrimeNumbersFound() {
+	private void incrementPrimeNumbersFound() {
 		this.primeNumbersFound++;
 	}
 
@@ -94,7 +109,7 @@ public class Queue extends ArrayList<Number> {
 	 * @return boolean true if a new item has been inserted and has not been already
 	 *         read, false otherwise
 	 */
-	protected boolean isReadable() {
+	private boolean isReadable() {
 		return this.getWriteCursor() > this.getReadCursor();
 	}
 
@@ -103,7 +118,7 @@ public class Queue extends ArrayList<Number> {
 	 * 
 	 * @return boolean true if the Queue is not full, false otherwise
 	 */
-	protected boolean isWritable() {
+	private boolean isWritable() {
 		return this.size() < MAX_QUEUE_SIZE;
 	}
 
@@ -113,7 +128,7 @@ public class Queue extends ArrayList<Number> {
 	 * @return boolean true if all the prime numbers to find have been found, false
 	 *         otherwise
 	 */
-	protected boolean primeNumbersFound() {
+	private boolean primeNumbersFound() {
 		return this.getPrimeNumbersFound() >= this.getNumberOfPrimeNumbersWanted();
 	}
 
@@ -149,7 +164,7 @@ public class Queue extends ArrayList<Number> {
 	}
 
 	/**
-	 * Add a new Number into the queue
+	 * Add a new Number into the queue according to queue's writeCursor
 	 * 
 	 * @throws QueueFullException
 	 * @throws QueueFoundNumbersException

@@ -31,7 +31,7 @@ public class PrimeNumber {
 		Queue queue;
 
 		try {
-			queue = new Queue(PRIME_NUMBER_LIMIT);
+			queue = Queue.getQueue(PRIME_NUMBER_LIMIT);
 
 			/* Local variables */
 			int i; /* loop counter */

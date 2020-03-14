@@ -1,3 +1,5 @@
+// TODO describe the whole process in the fork
+
 @startuml
 start
 :Éventuellement : Demande du nombre de nombre premiers à trouver;

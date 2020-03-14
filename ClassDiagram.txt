@@ -5,61 +5,61 @@ interface "List" as List
 interface Runnable {
 	+run() : void
 }
-class Number
+class Number {
+	- Integer value
+	- boolean isPrime = false;
+	# Number(Integer)
+	# getValue() : Integer
+	# setValue(Integer) : void
+	# getPrime() : void
+	# setPrime(boolean) : void
+	# isPrime() : boolean
+}
 class Queue {
 	- {static} final long serialVersionUID = 1L
-	+ {static} int WAIT_TIME = 1000
-	- {static} int SIZE = 10000
-	- int readCursor
-	- int writeCursor
-	- Object queueLock
+	+ {static} final int WAIT_TIME = 50
+	- {static} final int MAX_PRIME_NUMBER = 10000
+	- {static} final int MAX_QUEUE_SIZE = 100000
+	- int readCursor = 0
+	- int writeCursor = 0
+	- Object queueLock = new Object();
 	- int numberOfPrimeNumbersWanted
 	- int primeNumbersFound = 0
-	+ Queue(int) : Queue
-	- synchronized getReadCursor() : int
-	- setReadCursor(int) : void
+	- {static} Queue queue = null;
+	- Queue(int) : Queue
+	+ {static} getQueue(int) : Queue
+	- getReadCursor() : int
 	- incrementReadCursor() : void
-	# synchronized getWriteCursor() : int
-	- setWriteCursor(int) : void
+	- getWriteCursor() : int
 	- incrementWriteCursor() : void
 	- getNumberOfPrimeNumbersWanted() : int
-	- setNumberOfPrimeNumbersWanted(int) : void
 	- getPrimeNumbersFound() : int
-	- setPrimeNumbersFound(int) : void
-	# synchronized incrementPrimeNumbersFound() : void
+	- incrementPrimeNumbersFound() : void
 	- isValidNumberOfPrimeNumbers(int) : boolean
-	# synchronized isReadable() : boolean
-	# synchronized isWritable() : boolean
-	# synchronized primeNumbersComputeComplete() : boolean
-	- read(int) : Number
-	# synchronized read() : Number
-	# synchronized write(Number) : void 
+	- isReadable() : boolean
+	- isWritable() : boolean
+	- primeNumbersFound() : boolean
+	# read() : Number
+	# write() : void 
 }
 
 abstract class Worker {
-	# Queue queue
-	+getQueue() : Queue
-	+setQueue(Queue) : void
-	+ {static} isPrime(int) : boolean
+	- Queue queue
+	# Worker(Queue) : Worker
+	# getQueue() : Queue
+	- setQueue(Queue) : void
 }
 
 class Consumer {
-	-String resultFileName
-	-Object fileLock
-	+consume() : void
-	+run() : void
-	+canConsume() : boolean
-	+finished() : boolean
-	+writeToFile(Integer) : boolean
+	+ Consumer(Queue) : Consumer
+	- consume() : void
+	+ run() : void
 }
 
 class Producer {
-	-boolean finishedWork
-	-Integer maxRange
-	-Integer currentIndex
-	+produce() : void
-	+run() : void()
-	+canProduce() : boolean
+	+ Producer(Queue) : Producer
+	- produce() : void
+	+ run() : void()
 }
 
 List <|.. ArrayList

@@ -18,7 +18,7 @@ public final class Consumer extends Worker implements Runnable {
 			try {
 				Thread.sleep(Queue.WAIT_TIME);
 			} catch (InterruptedException ie) {
-				// TODO maybe try to thorw this exception again to stop the current thread
+				// TODO maybe try to throw this exception again to stop the current thread execution
 				ie.printStackTrace();
 			}
 		}catch (QueueFoundNumbersException qfne) {
