@@ -14,7 +14,9 @@ public class Queue extends ArrayList<Number> {
 	/* the index of the next element that the consumer will get */
 	private int readCursor = 0;
 
-	/* the index of the next element that will be added to the queue by the producer */
+	/*
+	 * the index of the next element that will be added to the queue by the producer
+	 */
 	private int writeCursor = 0;
 
 	/* the number of prime numbers to find */
@@ -36,10 +38,8 @@ public class Queue extends ArrayList<Number> {
 
 	/*** GETTERS AND SETTERS ***/
 
-	synchronized private int getReadCursor() {
-		synchronized (this.queueLock) {
-			return readCursor;
-		}
+	private int getReadCursor() {
+		return readCursor;
 	}
 
 	private void setReadCursor(int readCursor) {
@@ -50,10 +50,8 @@ public class Queue extends ArrayList<Number> {
 		this.readCursor++;
 	}
 
-	synchronized protected int getWriteCursor() {
-		synchronized (this.queueLock) {
-			return writeCursor;
-		}
+	protected int getWriteCursor() {
+		return writeCursor;
 	}
 
 	private void setWriteCursor(int writeCursor) {
@@ -80,10 +78,8 @@ public class Queue extends ArrayList<Number> {
 		this.primeNumbersFound = primeNumbersFound;
 	}
 
-	synchronized protected void incrementPrimeNumbersFound() {
-		synchronized (this.queueLock) {
-			this.primeNumbersFound++;
-		}
+	protected void incrementPrimeNumbersFound() {
+		this.primeNumbersFound++;
 	}
 
 	/*** END GETTERS AND SETTERS ***/
@@ -102,7 +98,7 @@ public class Queue extends ArrayList<Number> {
 	 * @return boolean true if a new item has been inserted and has not been already
 	 *         read, false otherwise
 	 */
-	synchronized protected boolean isReadable() {
+	protected boolean isReadable() {
 		return this.getWriteCursor() > this.getReadCursor();
 	}
 
@@ -111,31 +107,22 @@ public class Queue extends ArrayList<Number> {
 	 * 
 	 * @return boolean true if the Queue is not full, false otherwise
 	 */
-	synchronized protected boolean isWritable() {
+	protected boolean isWritable() {
 		return this.size() < MAX_SIZE;
 	}
 
 	/**
+	 * Checks whether work is over
+	 * 
 	 * @return boolean true if all the prime numbers to find have been found, false
 	 *         otherwise
 	 */
-	synchronized protected boolean primeNumbersComputeComplete() {
+	protected boolean primeNumbersFound() {
+		/* critical section */
 		synchronized (this.queueLock) {
 			return this.getPrimeNumbersFound() >= this.getNumberOfPrimeNumbersWanted();
 		}
-	}
-
-	/**
-	 * Gives the number held at the _index in the queue
-	 * 
-	 * @param int _index
-	 * @return Number
-	 */
-	private Number read(int _index) throws QueueEmptyException {
-		if (!this.isReadable()) {
-			throw new QueueEmptyException("Queue is empty");
-		}
-		return super.get(_index);
+		/* end critical section */
 	}
 
 	/**
@@ -145,19 +132,20 @@ public class Queue extends ArrayList<Number> {
 	 * @throws QueueEmptyException
 	 * @hint synchronization is the key
 	 */
-	synchronized protected Number read() throws QueueEmptyException {
-		Number number = null;
-		try {
-			/* critical section */
-			synchronized (this.queueLock) {
-				number = this.read(this.getReadCursor());
-				this.incrementReadCursor();
+	protected Number read() throws QueueEmptyException {
+
+		/* critical section */
+		synchronized (this.queueLock) {
+			Number number = null;
+			if (!this.isReadable()) {
+				throw new QueueEmptyException("Queue is empty");
 			}
-			/* end critical section */
-		} catch (QueueEmptyException e) {
-			throw e;
+			number = super.get(this.getReadCursor());
+			this.incrementReadCursor();
+			
+			return number;
 		}
-		return number;
+		/* end critical section */
 	}
 
 	/**
@@ -166,12 +154,12 @@ public class Queue extends ArrayList<Number> {
 	 * @param _number Number to add to the queue
 	 * @throws QueueFullException
 	 */
-	synchronized protected void write(Number _number) throws QueueFullException {
-		if (!this.isWritable()) {
-			throw new QueueFullException("Queue is full");
-		}
+	protected void write(Number _number) throws QueueFullException {
 		/* critical section */
 		synchronized (this.queueLock) {
+			if (!this.isWritable()) {
+				throw new QueueFullException("Queue is full");
+			}
 			this.add(_number);
 			this.incrementWriteCursor();
 		}

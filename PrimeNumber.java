@@ -108,11 +108,11 @@ public class PrimeNumber {
 			/* END THREADS */
 
 			// Print queue to file
-			int printed = 0;
+			/*int printed = 0;
 			for (i = 0; i < queue.size(); i++) {
 				Number number = queue.get(i);
 				
-				if (number.isPrime()) {
+				if (number.getPrime()) {
 					boolean result = PrimeNumber.writeToFile(number.getValue().toString(), true);
 					if (!result) {
 						System.out.println("Failed printing to result file");
@@ -123,8 +123,11 @@ public class PrimeNumber {
 				}
 				
 			}
-
 			System.out.println("Printed " + printed + " numbers.");
+			*/
+			
+			
+
 			// Print execution time
 
 		} catch (QueueSizeLimitException e) {
@@ -147,6 +150,7 @@ public class PrimeNumber {
 		try {
 			FileWriter fstream = new FileWriter(RESULT_FILE_NAME, _append);
 			out = new BufferedWriter(fstream);
+			if(_append) _text += "\n";
 			out.write(_text);
 		} catch (IOException e) {
 			fileAppended = false;

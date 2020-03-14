@@ -1,14 +1,10 @@
 
-public final class Consumer extends Worker {
+public final class Consumer extends Worker implements Runnable {
 
 	public Consumer(Queue _queue) {
 		super(_queue);
 	}
-
-	public void work() {
-		// System.out.println("Consumer working");
-		this.consume();
-	}
+	
 
 	private void consume() {
 		Number pnc = null;
@@ -22,6 +18,8 @@ public final class Consumer extends Worker {
 				pnc.setPrime(true);
 				this.queue().incrementPrimeNumbersFound();
 			}
+			
+			// writeToFile
 		} catch (QueueEmptyException e) {
 			System.err.println(e.getMessage());
 
@@ -30,6 +28,20 @@ public final class Consumer extends Worker {
 				Thread.sleep(Queue.WAIT_TIME);
 			} catch (InterruptedException ie) {
 				ie.printStackTrace();
+			}
+		}
+	}
+	
+	@Override
+	public void run() {
+		boolean canWork = true;
+		while(!this.queue().primeNumbersFound() && canWork) {
+			this.consume();
+			
+			try {
+				Thread.sleep(Queue.WAIT_TIME);
+			} catch (InterruptedException e) {
+				canWork = false;
 			}
 		}
 	}

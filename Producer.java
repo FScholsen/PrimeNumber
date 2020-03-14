@@ -1,21 +1,14 @@
 
-public final class Producer extends Worker {
+public final class Producer extends Worker implements Runnable {
 
 	public Producer(Queue _queue) {
 		super(_queue);
 	}
 
-	public void work() {
-		//System.out.println("Producer working");
-		this.produce();
-	}
-	
 	private void produce() {
 		
-		Number number = new Number(this.queue().getWriteCursor());
-		
 		try {
-			this.queue().write(number);
+			this.queue().write(new Number(this.queue().getWriteCursor()));
 		} catch (QueueFullException e) {
 			System.err.println(e.getMessage());
 
@@ -24,6 +17,20 @@ public final class Producer extends Worker {
 				Thread.sleep(Queue.WAIT_TIME);
 			} catch (InterruptedException ie) {
 				ie.printStackTrace();
+			}
+		}
+	}
+	
+	@Override
+	public void run() {
+		boolean canWork = true;
+		while(!this.queue().primeNumbersFound() && canWork) {
+			this.produce();
+			
+			try {
+				Thread.sleep(Queue.WAIT_TIME);
+			} catch (InterruptedException e) {
+				canWork = false;
 			}
 		}
 	}
