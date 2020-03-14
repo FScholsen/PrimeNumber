@@ -1,5 +1,5 @@
 
-public class Producer extends Worker {
+public final class Producer extends Worker {
 
 	public Producer(Queue _queue) {
 		super(_queue);
@@ -17,7 +17,7 @@ public class Producer extends Worker {
 		try {
 			this.queue().write(number);
 		} catch (QueueFullException e) {
-			System.out.println(e.getMessage());
+			System.err.println(e.getMessage());
 
 			Thread.yield();
 			try {

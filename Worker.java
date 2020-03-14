@@ -38,7 +38,7 @@ public abstract class Worker implements Runnable {
 	@Override
 	public void run() {
 		boolean canWork = true;
-		//while(!this.workDone() && canWork) {
+		while(!this.workDone() && canWork) {
 			this.work();
 			
 			try {
@@ -46,7 +46,7 @@ public abstract class Worker implements Runnable {
 			} catch (InterruptedException e) {
 				canWork = false;
 			}
-		//}
+		}
 	}
 
 }

@@ -2,6 +2,7 @@ import java.util.ArrayList;
 
 public class Queue extends ArrayList<Number> {
 
+	/* a serial version unique identifier inherited from ArrayList */
 	private static final long serialVersionUID = 1L;
 
 	/* Not useful (performance killer) */
@@ -91,7 +92,7 @@ public class Queue extends ArrayList<Number> {
 	 * Checks whether the number of prime numbers to find is not bigger than the
 	 * MAX_SIZE constant
 	 */
-	public boolean isValidNumberOfPrimeNumbers(int primeNumbersWanted) {
+	private boolean isValidNumberOfPrimeNumbers(int primeNumbersWanted) {
 		return primeNumbersWanted < MAX_SIZE;
 	}
 

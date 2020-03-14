@@ -61,31 +61,3 @@ add(int _writeCursor) {
 	q.add(_writeCursor);
 }
 
-
-public boolean writeToFile(Number _primeNumber) {
-	boolean queueAppended = true;
-
-	BufferedWriter out = null;
-
-	try {
-		FileWriter fstream = new FileWriter(this.resultFileName, true);
-		out = new BufferedWriter(fstream);
-		out.write(_primeNumber.getValue() + "\n");
-	} catch (IOException e) {
-		queueAppended = false;
-		System.err.println("Error: " + e.getMessage());
-	}
-
-	finally {
-		if (out != null) {
-			try {
-				out.close();
-			} catch (IOException e) {
-				queueAppended = false;
-				e.printStackTrace();
-			}
-		}
-	}
-
-	return queueAppended;
-}
