@@ -8,8 +8,9 @@ public final class Producer extends Worker implements Runnable {
 	private void produce() throws QueueFoundNumbersException, QueueFullException {
 		
 		try {
-			this.queue().write(new Number(this.queue().getWriteCursor()));
-			System.out.println("[" + this + "] produces");
+			/* add a new prime number candidate to the queue */
+			this.queue().write();
+			//System.out.println("[" + this + "] produces");
 		} catch (QueueFullException e) {
 			System.err.println(e.getMessage());
 			

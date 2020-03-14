@@ -14,9 +14,4 @@ public abstract class Worker {
 	private void setQueue(Queue queue) {
 		this.queue = queue;
 	}
-
-	public String idle() {
-		return this + " is waiting";
-	}
-
 }

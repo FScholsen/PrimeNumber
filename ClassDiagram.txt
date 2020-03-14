@@ -62,11 +62,12 @@ class Producer {
 	+canProduce() : boolean
 }
 
-Runnable <|.. Worker
 List <|.. ArrayList
 ArrayList <|-- Queue
 Number *-- Queue : uses
-Worker *-- "1" Queue
+Queue *-- Worker
+Runnable <|.. Consumer
+Runnable <|.. Producer
 Worker <|-- Consumer
 Worker <|-- Producer
 
