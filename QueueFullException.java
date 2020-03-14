@@ -1,6 +1,11 @@
 
 public class QueueFullException extends Exception {
 
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 6771435114421146393L;
+
 	public QueueFullException() {
 		// TODO Auto-generated constructor stub
 	}

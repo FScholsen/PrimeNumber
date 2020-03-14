@@ -6,20 +6,16 @@ public final class Consumer extends Worker implements Runnable {
 	}
 	
 
-	private void consume() {
+	private void consume() throws QueueFoundNumbersException {
 		Number pnc = null;
 		try {
 			/* retrieve a prime number candidate */
-			/* TODO Maybe try to insert the isPrime logic in the read() method of Queue, inside of the synchronized lock */
 			pnc = this.queue().read();
-			/* try to flag the number as prime */
-			System.out.println(pnc.getValue() + " => " + pnc.isPrime());
-			if (pnc.isPrime()) {
-				pnc.setPrime(true);
-				this.queue().incrementPrimeNumbersFound();
-			}
-			
+			System.out.println("[" + this + "]" + "\t#[" + pnc + " - " + pnc.getValue() + "] => prime : " + pnc.getPrime());
 			// writeToFile
+			/*if (pnc.getPrime()) {
+				PrimeNumber.writeToFile(pnc.getValue().toString(), true);
+			}*/
 		} catch (QueueEmptyException e) {
 			System.err.println(e.getMessage());
 
@@ -29,14 +25,20 @@ public final class Consumer extends Worker implements Runnable {
 			} catch (InterruptedException ie) {
 				ie.printStackTrace();
 			}
+		}catch (QueueFoundNumbersException qfne) {
+			throw qfne;
 		}
 	}
 	
 	@Override
 	public void run() {
 		boolean canWork = true;
-		while(!this.queue().primeNumbersFound() && canWork) {
-			this.consume();
+		while(canWork) {
+			try {
+				this.consume();
+			} catch (QueueFoundNumbersException e) {
+				canWork = false;
+			}
 			
 			try {
 				Thread.sleep(Queue.WAIT_TIME);

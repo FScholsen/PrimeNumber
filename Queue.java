@@ -6,11 +6,13 @@ public class Queue extends ArrayList<Number> {
 	private static final long serialVersionUID = 1L;
 
 	/* Not useful (performance killer) */
-	public static final int WAIT_TIME = 1000;
+	public static final int WAIT_TIME = 100;
 
 	/* the max allowed size of prime numbers to find */
 	private static final int MAX_SIZE = 10000;
 
+	private static final int MAX_QUEUE_SIZE = 100000;
+	
 	/* the index of the next element that the consumer will get */
 	private int readCursor = 0;
 
@@ -108,7 +110,7 @@ public class Queue extends ArrayList<Number> {
 	 * @return boolean true if the Queue is not full, false otherwise
 	 */
 	protected boolean isWritable() {
-		return this.size() < MAX_SIZE;
+		return this.size() < MAX_QUEUE_SIZE;
 	}
 
 	/**
@@ -118,11 +120,7 @@ public class Queue extends ArrayList<Number> {
 	 *         otherwise
 	 */
 	protected boolean primeNumbersFound() {
-		/* critical section */
-		synchronized (this.queueLock) {
-			return this.getPrimeNumbersFound() >= this.getNumberOfPrimeNumbersWanted();
-		}
-		/* end critical section */
+		return this.getPrimeNumbersFound() >= this.getNumberOfPrimeNumbersWanted();
 	}
 
 	/**
@@ -132,17 +130,26 @@ public class Queue extends ArrayList<Number> {
 	 * @throws QueueEmptyException
 	 * @hint synchronization is the key
 	 */
-	protected Number read() throws QueueEmptyException {
+	protected Number read() throws QueueEmptyException, QueueFoundNumbersException {
 
 		/* critical section */
 		synchronized (this.queueLock) {
-			Number number = null;
+			if (this.primeNumbersFound()) {
+				throw new QueueFoundNumbersException("QueueFoundNumbersException");
+			}
+			
 			if (!this.isReadable()) {
 				throw new QueueEmptyException("Queue is empty");
 			}
-			number = super.get(this.getReadCursor());
+			Number number = super.get(this.getReadCursor());
 			this.incrementReadCursor();
 			
+			if (number.isPrime()) {
+				number.setPrime(true);
+				this.incrementPrimeNumbersFound();
+			}
+			
+			// TODO move outside of synchronized statement to see if this creates a glitch
 			return number;
 		}
 		/* end critical section */
@@ -154,9 +161,12 @@ public class Queue extends ArrayList<Number> {
 	 * @param _number Number to add to the queue
 	 * @throws QueueFullException
 	 */
-	protected void write(Number _number) throws QueueFullException {
+	protected void write(Number _number) throws QueueFullException, QueueFoundNumbersException {
 		/* critical section */
 		synchronized (this.queueLock) {
+			if (this.primeNumbersFound()) {
+				throw new QueueFoundNumbersException("QueueFoundNumbersException");
+			}
 			if (!this.isWritable()) {
 				throw new QueueFullException("Queue is full");
 			}

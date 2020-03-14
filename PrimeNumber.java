@@ -7,11 +7,11 @@ import java.util.List;
 public class PrimeNumber {
 
 	/* constant The number of prime numbers to calculate */
-	public static final int PRIME_NUMBER_LIMIT = 10;
+	public static final int PRIME_NUMBER_LIMIT = 1000;
 
 	/* constants for Producer & Consumer Threads */
-	public static final int NUM_PRODUCERS = 100;
-	public static final int NUM_CONSUMERS = 10;
+	public static final int NUM_PRODUCERS = 200;
+	public static final int NUM_CONSUMERS = 50;
 
 	public static final String RESULT_FILE_NAME = "result.txt";
 
@@ -108,7 +108,7 @@ public class PrimeNumber {
 			/* END THREADS */
 
 			// Print queue to file
-			/*int printed = 0;
+			int printed = 0;
 			for (i = 0; i < queue.size(); i++) {
 				Number number = queue.get(i);
 				
@@ -124,7 +124,7 @@ public class PrimeNumber {
 				
 			}
 			System.out.println("Printed " + printed + " numbers.");
-			*/
+			
 			
 			
 

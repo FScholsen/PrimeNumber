@@ -1,6 +1,11 @@
 
 public class QueueEmptyException extends Exception {
 
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = -2889327413278340237L;
+
 	public QueueEmptyException() {
 		// TODO Auto-generated constructor stub
 	}
