@@ -21,7 +21,7 @@ public class PrimeNumber {
 		long start = System.currentTimeMillis();
 
 		/* Clear the result file from any previous result */
-		writeToFile("", false);
+		PrimeNumber.writeToFile("", false, PrimeNumber.RESULT_FILE_NAME);
 
 		/* List of Threads for consumers and producers (global variables) */
 		List<Thread> producerThreads = new ArrayList<Thread>(NUM_PRODUCERS);
@@ -99,7 +99,7 @@ public class PrimeNumber {
 			/**** END THREADS ****/
 			
 			// Print queue to file
-			writeToFile(queue, true);
+			PrimeNumber.writeToFile(queue, true, PrimeNumber.RESULT_FILE_NAME);
 			
 		} catch (QueueSizeLimitException e) {
 			System.err.println("Error: " + e.getMessage());
@@ -107,8 +107,8 @@ public class PrimeNumber {
 		queue = null;
 		
 		// Print execution time to file
-		System.out.println(elapsedTime(start));
-		writeToFile(elapsedTime(start), true);
+		System.out.println(PrimeNumber.elapsedTime(start));
+		PrimeNumber.writeToFile(elapsedTime(start), true, PrimeNumber.RESULT_FILE_NAME);
 	}
 
 	/**
@@ -122,11 +122,11 @@ public class PrimeNumber {
 		return "Execution time : " + timeElapsed + " seconds.";
 	}
 
-	public static boolean writeToFile(String _text, boolean _append) {
+	public static boolean writeToFile(String _text, boolean _append, String filename) {
 		BufferedWriter out = null;
 		boolean fileAppended = true;
 		try {
-			FileWriter fstream = new FileWriter(RESULT_FILE_NAME, _append);
+			FileWriter fstream = new FileWriter(filename, _append);
 			out = new BufferedWriter(fstream);
 			if (_append)
 				_text += "\n";
@@ -147,12 +147,12 @@ public class PrimeNumber {
 		return fileAppended;
 	}
 
-	public static boolean writeToFile(Queue _queue, boolean _append) {
+	public static boolean writeToFile(Queue _queue, boolean _append, String filename) {
 		BufferedWriter out = null;
 		boolean fileAppended = true;
 		String lf = null;
 		try {
-			FileWriter fstream = new FileWriter(RESULT_FILE_NAME, _append);
+			FileWriter fstream = new FileWriter(filename, _append);
 			out = new BufferedWriter(fstream);
 			if (_append)
 				lf = "\n";
