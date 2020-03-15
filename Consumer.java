@@ -1,27 +1,16 @@
 
-public final class Consumer extends Worker {
+public final class Consumer extends Worker implements Runnable {
 
 	public Consumer(Queue _queue) {
 		super(_queue);
 	}
+	
 
-	public void work() {
-		// System.out.println("Consumer working");
-		this.consume();
-	}
-
-	private void consume() {
-		Number pnc = null;
+	private void consume() throws QueueFoundNumbersException {
 		try {
-			/* retrieve a prime number candidate */
-			/* TODO Maybe try to insert the isPrime logic in the read() method of Queue, inside of the synchronized lock */
-			pnc = this.queue().read();
-			/* try to flag the number as prime */
-			System.out.println(pnc.getValue() + " => " + pnc.isPrime());
-			if (pnc.isPrime()) {
-				pnc.setPrime(true);
-				this.queue().incrementPrimeNumbersFound();
-			}
+			/* flag a prime number candidate as prime, or not */
+			Number pnc = this.queue().read();
+			//System.out.println(this + "\tconsumes" + "\t" + pnc.getValue() + " - " + (pnc.getPrime()? "Prime" : "") );
 		} catch (QueueEmptyException e) {
 			System.err.println(e.getMessage());
 
@@ -29,7 +18,28 @@ public final class Consumer extends Worker {
 			try {
 				Thread.sleep(Queue.WAIT_TIME);
 			} catch (InterruptedException ie) {
+				// TODO maybe try to throw this exception again to stop the current thread execution
 				ie.printStackTrace();
+			}
+		}catch (QueueFoundNumbersException qfne) {
+			throw qfne;
+		}
+	}
+	
+	@Override
+	public void run() {
+		boolean canWork = true;
+		while(canWork) {
+			try {
+				this.consume();
+			} catch (QueueFoundNumbersException e) {
+				canWork = false;
+			}
+			
+			try {
+				Thread.sleep(Queue.WAIT_TIME);
+			} catch (InterruptedException e) {
+				canWork = false;
 			}
 		}
 	}

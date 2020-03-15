@@ -1,5 +1,12 @@
-
+/*
+ * This exception is thrown when the limit number of prime numbers that the queue can calculate is given
+ */
 public class QueueSizeLimitException extends Exception {
+
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = -4448495870995540697L;
 
 	public QueueSizeLimitException() {
 		// TODO Auto-generated constructor stub

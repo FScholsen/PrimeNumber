@@ -1,5 +1,13 @@
-
+/*
+ * Queue is full, nothing can be written in it
+ * In other terms, this exception is thrown when the queue's size equals or is greater than the queue's MAX_QUEUE_SIZE
+ */
 public class QueueFullException extends Exception {
+
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 6771435114421146393L;
 
 	public QueueFullException() {
 		// TODO Auto-generated constructor stub
