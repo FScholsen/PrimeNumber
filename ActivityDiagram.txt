@@ -1,65 +1,34 @@
-// TODO describe the whole process in the fork
-
 @startuml
 start
-:Éventuellement : Demande du nombre de nombre premiers à trouver;
-:Création de la structure de donnée qui contiendra les 1000 premiers nombres premiers \n // List<Number> Q = new ArrayList<Number>();
-fork
-	while (consumer do not invoke interrupt() ?) is (true)
-		:// initialisation des nombres de 0 à n\n// et flag isPrime à false\n\tproduce();
-	endwhile (false)
-fork again
-	while (!Q.PrimeNumbersComputeComplete()) is (true)
-		if (canRead()) then (true)
-			:consume();
-		else (false)
-			:yield();
-		endif
-	endwhile (false)
-	:Consumer invoke interrupt;
-end fork
-:Ecriture du contenu de la structure de donnée dans le fichier résultat;
-:Ecriture du temps d'execution du\nprogramme dans le fichier résultat;
+:Get the number of prime numbers to find;
+if(The limit of prime numbers\nto find is exceeded?) then (false)
+	:Creation of the data structure which\nwill contain the prime numbers wanted;
+	fork
+		while (All the prime numbers wanted have been found) is (false)
+			if (Producer can add a new number into the data structure ?) then (true)
+				:Find the value of the next integer\nto add to the data structure;
+				:Add the value to the data structure;
+				:Increment the write index;
+				:Sleep during n milliseconds;
+			else (false)
+			endif
+		endwhile (true)
+	fork again
+		while (All the prime numbers wanted have been found ?) is (false)
+			if (Consumer can read a number from the data structure?) then (true)
+				:Read the next number from the data structure;
+				:Increment the read index;
+				if(The number is a prime number?) then (true)
+					:Flag the number as prime;
+					:Increment the count of prime numbers found;
+				else (false)
+				endif
+			else (false)
+			endif
+		endwhile (true)
+	end fork
+	:Write the content of the data structure to the result file;
+endif
+:Write the execution time of\nthe program to the result file;
 stop
 @enduml
-
-----
-Notes :
-Q.PrimeNumbersComputeComplete() return true if Q.primeNumbersFound (by the consumers) >= Q.PRIMES_TO_FIND
-is reached when consumer (canRead() && !Q.isFull()) consume();
-
-/* Consumer Method */
-consume() {
-	number = q.get();
-	
-}
-
-/* Queue Method */
-get() {
-	/* section critique */
-	Number number = q.get(readCursor);
-	if(number.isPrime()) {
-		number.isFlaggedAsPrime = true;
-		Q.primeNumbersFound++;
-	}
-	readCursor++;
-	/* fin section critique */
-	return number;
-}
-
-/* Producer Method */
-produce() {
-	this.q.add();
-}
-
-/* Queue Method */
-add() {
-	/* section critique */
-	q.add(writeCursor);
-	writeCursor++;
-	/* fin section critique */
-}
-add(int _writeCursor) {
-	q.add(_writeCursor);
-}
-

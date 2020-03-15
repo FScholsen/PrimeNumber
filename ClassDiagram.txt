@@ -7,7 +7,7 @@ interface Runnable {
 }
 class Number {
 	- Integer value
-	- boolean isPrime = false;
+	- boolean isPrime = false
 	# Number(Integer)
 	# getValue() : Integer
 	# setValue(Integer) : void
@@ -22,10 +22,10 @@ class Queue {
 	- {static} final int MAX_QUEUE_SIZE = 100000
 	- int readCursor = 0
 	- int writeCursor = 0
-	- Object queueLock = new Object();
+	- Object queueLock = new Object()
 	- int numberOfPrimeNumbersWanted
 	- int primeNumbersFound = 0
-	- {static} Queue queue = null;
+	- {static} Queue queue = null
 	- Queue(int) : Queue
 	+ {static} getQueue(int) : Queue
 	- getReadCursor() : int
