@@ -32,7 +32,6 @@ public class Number {
 		this.isPrime = isPrime;
 	}
 	
-	// TODO change implementation
 	protected boolean isPrime() {
 		int i;
 		int number = this.getValue();
