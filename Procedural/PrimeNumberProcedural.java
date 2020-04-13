@@ -1,3 +1,7 @@
+package Procedural;
+
+import PrimeNumber.*;
+
 /*
  * Single threaded version of PrimeNumber, using isPrime method of Number to determine prime numbers
  */

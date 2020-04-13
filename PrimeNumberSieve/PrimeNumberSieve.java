@@ -1,8 +1,12 @@
+package PrimeNumberSieve;
+
 import java.io.BufferedWriter;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import PrimeNumberExceptions.*;
+import PrimeNumber.*;
 
 public class PrimeNumberSieve {
 
@@ -23,7 +27,7 @@ public class PrimeNumberSieve {
 		long start = System.currentTimeMillis();
 		
 		/* Clear the result file from any previous result */
-		PrimeNumber.writeToFile("", false, PrimeNumber.RESULT_FILE_NAME);
+		PrimeNumber.writeToFile("", false, PrimeNumberSieve.RESULT_FILE_NAME);
 
 		/* List of Threads for consumers and producers (global variables) */
 		List<Thread> pts = new ArrayList<Thread>();
@@ -32,11 +36,11 @@ public class PrimeNumberSieve {
 		/* The data structure that will hold the numbers */
 		QueueSieve queue;
 
-		QueueSieve.setNumbersToAnalyze(NUMBER_LIMIT);
+		//QueueSieve.setNumbersToAnalyze(NUMBER_LIMIT);
 		
 
 		try {
-			queue = QueueSieve.getQueue();
+			queue = QueueSieve.getQueue(NUMBER_LIMIT);
 			
 			if(queue != null) {
 				/* Local variables */
@@ -44,10 +48,10 @@ public class PrimeNumberSieve {
 
 				/* Producer and consumer local variables declaration */
 				ProducerSieve p;
-				ConsumerSieve c;
+				//ConsumerSieve c;
 
 				Thread pt;
-				Thread ct;
+				//Thread ct;
 
 				for(i = 0; i < queue.getFactorLimit(); i++) {
 					p = new ProducerSieve(queue);
@@ -68,18 +72,17 @@ public class PrimeNumberSieve {
 				}
 				
 				for(i = 2; i < QueueSieve.getNumbersToAnalyze(); i++) {
-					//queue.read();
 					int n = queue.getNumber(i);
-					if(n < QueueSieve.NON_PRIME) System.out.println(i);
-					//System.out.println(i + " => " + (n < QueueSieve.NON_PRIME ? "\tprime": ""));
+					if(n < QueueSieve.NON_PRIME) { 
+						System.out.println(i);
+						PrimeNumber.writeToFile(Integer.toString(i), true, PrimeNumberSieve.RESULT_FILE_NAME);
+					}
 				}
-				
-				//System.out.println(QueueSieve.getQueue());
+				PrimeNumber.writeToFile(PrimeNumber.elapsedTime(start), true, PrimeNumberSieve.RESULT_FILE_NAME);
 				
 				p = null;
-				c = null;
+				//c = null;
 
-				ct = null;
 				
 			}
 			
@@ -95,38 +98,6 @@ public class PrimeNumberSieve {
 		
 		// Print execution time to file
 		System.out.println(PrimeNumber.elapsedTime(start));
-	}
-	
-	public static boolean writeToFile(QueueSieve _queue, boolean _append, String filename) {
-		BufferedWriter out = null;
-		boolean fileAppended = true;
-		String lf = null;
-		try {
-			FileWriter fstream = new FileWriter(filename, _append);
-			out = new BufferedWriter(fstream);
-			if (_append)
-				lf = "\n";
-			for (int i = 0; i < _queue.getNumbers().length; i++) {
-				/*if (_queue.getNumber(i).getPrime()) {
-					System.out.println(_queue.get(i).getValue().toString());
-					out.write(_queue.get(i).getValue().toString() + lf);
-				}*/
-
-			}
-		} catch (IOException e) {
-			fileAppended = false;
-			System.err.println("Error: " + e.getMessage());
-		} finally {
-			if (out != null) {
-				try {
-					out.close();
-				} catch (IOException e) {
-					fileAppended = false;
-					e.printStackTrace();
-				}
-			}
-		}
-		return fileAppended;
 	}
 	
 }

@@ -1,3 +1,4 @@
+package PrimeNumberExceptions;
 /*
  * Queue is empty, nothing can be read from it
  * In other terms, this exception is thrown when the queue's readCursor equals the queue's writeCursor

@@ -1,28 +1,31 @@
+package PrimeNumber;
 
-public final class ProducerSieve extends WorkerSieve implements Runnable {
+import PrimeNumberExceptions.*;
 
-	public ProducerSieve(QueueSieve _queue) {
+public final class Producer extends Worker implements Runnable {
+
+	public Producer(Queue _queue) {
 		super(_queue);
 	}
 
-	private void produce() throws QueueFullException {
+	private void produce() throws QueueFoundNumbersException, QueueFullException {
 		
 		try {
 			/* add a new prime number candidate to the queue */
-			// TODO replace write by flag
 			this.queue().write();
-
 			//System.out.println("[" + this + "] produces");
 		} catch (QueueFullException e) {
-			/*System.err.println(e.getMessage());
+			System.err.println(e.getMessage());
 			
 			Thread.yield();
 			try {
-				Thread.sleep(QueueSieve.WAIT_TIME);
+				Thread.sleep(Queue.WAIT_TIME);
 			} catch (InterruptedException ie) {
 				ie.printStackTrace();
-			}*/
+			}
 			throw e;
+		} catch (QueueFoundNumbersException qfne) {
+			throw qfne;
 		}
 	}
 	
@@ -33,12 +36,12 @@ public final class ProducerSieve extends WorkerSieve implements Runnable {
 			
 			try {
 				this.produce();
-			} catch (QueueFullException e) {
+			} catch (QueueFoundNumbersException | QueueFullException e) {
 				canWork = false;
 			}
 			
 			try {
-				Thread.sleep(QueueSieve.WAIT_TIME);
+				Thread.sleep(Queue.WAIT_TIME);
 			} catch (InterruptedException e) {
 				canWork = false;
 			}

@@ -1,3 +1,4 @@
+package PrimeNumberExceptions;
 /*
  * Queue is full, nothing can be written in it
  * In other terms, this exception is thrown when the queue's size equals or is greater than the queue's MAX_QUEUE_SIZE

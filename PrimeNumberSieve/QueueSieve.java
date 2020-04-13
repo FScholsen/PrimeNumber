@@ -1,8 +1,11 @@
+package PrimeNumberSieve;
+
 import java.util.Arrays;
+import PrimeNumberExceptions.*;
 
 public class QueueSieve {
 
-	private static final int NEW = -1; // PRIME alias
+	private static final int NEW = -1; // Uninitialized number, may be a prime number or not
 	private static final int PRIME = 0;
 	public static final int NON_PRIME = 1;
 
@@ -14,7 +17,7 @@ public class QueueSieve {
 
 	/* the count of prime numbers to find */
 	private static final int PRIME_NUMBERS_TO_FIND = 1000;
-	
+
 	/* the index of the next element that the consumer will read */
 	private int readCursor = 2;
 
@@ -34,7 +37,7 @@ public class QueueSieve {
 	private int factorLimit;
 
 	private static int numbersToAnalyze;
-	
+
 	/* the count of numbers flagged as primes */
 	private int primeNumbersFound = 0;
 
@@ -45,11 +48,24 @@ public class QueueSieve {
 	private QueueSieve(int _numbersToAnalyze) throws QueueSizeLimitException {
 		if (!this.isValidNumbersToAnalyze(_numbersToAnalyze)) {
 			throw new QueueSizeLimitException(
-					"The count of numbers to analyze is greater than or equals to " + QueueSieve.MAX_QUEUE_SIZE);
+					"The count of numbers to analyze is greater than or equal to " + QueueSieve.MAX_QUEUE_SIZE);
 		}
+		/*
+		 * Set the range of numbers to check 
+		 * e.g. : 1000 => the range will be 0-1000 
+		 * the program will check, for each number within the range, if it's a prime
+		 * number or not
+		 */
 		QueueSieve.setNumbersToAnalyze(_numbersToAnalyze);
+		
+		/* 
+		 * The number of factors to use to determine all the prime numbers within the range
+		 * (when the program will multiply the numbers to flag them as prime. See wikipedia : Sieve of Eratosthenes)
+		 */ 
 		this.setFactorLimit((int) Math.sqrt((double) _numbersToAnalyze) + 1);
+		// Create a array of integers (the size is determined by the range of numbers to check)
 		this.numbers = new int[_numbersToAnalyze + 1];
+		// Initialize all the numbers within the array with the value -1 (Uninitialized)
 		Arrays.fill(numbers, QueueSieve.NEW);
 	}
 
@@ -60,10 +76,10 @@ public class QueueSieve {
 	 * @return The QueueSieve instance
 	 * @throws QueueSizeLimitException
 	 */
-	public static QueueSieve getQueue() throws QueueSizeLimitException {
+	public static QueueSieve getQueue(int _numbersToAnalyze) throws QueueSizeLimitException {
 		if (QueueSieve.queue == null)
 			try {
-				queue = new QueueSieve(QueueSieve.getNumbersToAnalyze());
+				queue = new QueueSieve(_numbersToAnalyze);
 			} catch (QueueSizeLimitException e) {
 				System.err.println("Error: " + e.getMessage());
 				throw e;
@@ -120,7 +136,7 @@ public class QueueSieve {
 	public void setNumber(int index, int value) {
 		this.numbers[index] = value;
 	}
-	
+
 	private int getPrimeNumbersFound() {
 		return primeNumbersFound;
 	}
@@ -162,7 +178,7 @@ public class QueueSieve {
 	public boolean isWritable() {
 		return this.getWriteCursor() <= QueueSieve.getNumbersToAnalyze();
 	}
-	
+
 	/**
 	 * Checks whether work is over
 	 * 
@@ -180,7 +196,7 @@ public class QueueSieve {
 	 * @return Number the next item to read in the queue
 	 * @throws QueueEmptyException
 	 * @throws QueueReadLimitException
-	 * @throws QueueFoundNumbersException 
+	 * @throws QueueFoundNumbersException
 	 */
 	protected int read() throws QueueEmptyException, QueueReadLimitException, QueueFoundNumbersException {
 

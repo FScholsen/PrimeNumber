@@ -1,3 +1,4 @@
+package PrimeNumber;
 
 public class Number {
 	

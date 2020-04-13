@@ -1,3 +1,6 @@
+package PrimeNumberSieve;
+
+import PrimeNumberExceptions.*;
 
 public final class ConsumerSieve extends WorkerSieve implements Runnable {
 

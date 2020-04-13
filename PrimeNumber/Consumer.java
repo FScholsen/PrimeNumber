@@ -1,3 +1,6 @@
+package PrimeNumber;
+
+import PrimeNumberExceptions.*;
 
 public final class Consumer extends Worker implements Runnable {
 

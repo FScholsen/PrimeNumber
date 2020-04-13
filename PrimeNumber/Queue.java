@@ -1,4 +1,7 @@
+package PrimeNumber;
+
 import java.util.ArrayList;
+import PrimeNumberExceptions.*;
 
 public class Queue extends ArrayList<Number> {
 

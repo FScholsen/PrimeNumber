@@ -1,3 +1,4 @@
+package PrimeNumberExceptions;
 /*
  * This exception is thrown when the limit number of prime numbers that the queue can calculate is given
  */

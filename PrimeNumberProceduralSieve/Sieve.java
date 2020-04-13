@@ -1,8 +1,11 @@
+package PrimeNumberProceduralSieve;
+
 import java.io.BufferedWriter;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.lang.Math;
 import java.util.Arrays;
+import PrimeNumber.PrimeNumber;
 
 public class Sieve {
 

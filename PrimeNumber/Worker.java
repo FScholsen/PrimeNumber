@@ -1,13 +1,14 @@
+package PrimeNumber;
 
-public abstract class WorkerSieve {
+public abstract class Worker {
 
-	private QueueSieve queue;
+	private Queue queue;
 
 	/**
 	 * Set the queue for either the producer, either the consumer
 	 * @param queue 
 	 */
-	protected WorkerSieve(QueueSieve queue) {
+	protected Worker(Queue queue) {
 		this.setQueue(queue);
 	}
 
@@ -15,11 +16,11 @@ public abstract class WorkerSieve {
 	 * 
 	 * @return the queue instance
 	 */
-	protected QueueSieve queue() {
+	protected Queue queue() {
 		return queue;
 	}
 
-	private void setQueue(QueueSieve queue) {
+	private void setQueue(Queue queue) {
 		this.queue = queue;
 	}
 }

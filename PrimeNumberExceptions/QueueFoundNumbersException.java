@@ -1,3 +1,5 @@
+package PrimeNumberExceptions;
+
 /*
  * The number of queue's prime numbers requested has been found
  * In other terms, this exception is thrown when the queue's primeNumbersFound equals or is greater than the queue's numberOfPrimeNumbersWanted

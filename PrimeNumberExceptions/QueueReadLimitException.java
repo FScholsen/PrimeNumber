@@ -1,3 +1,4 @@
+package PrimeNumberExceptions;
 
 public class QueueReadLimitException extends Exception {
 
